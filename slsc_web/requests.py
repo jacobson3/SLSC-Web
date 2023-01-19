@@ -27,9 +27,10 @@ class Request(ABC):
 
 
 class InitializeRequest(Request):
-    '''
+    """
     Request for initializing an SLSC session
-    '''
+    """
+
     def __init__(self, id: int, resources: str):
         params = {"devices": resources.split(",")}
         super().__init__(id, params)
@@ -39,15 +40,30 @@ class InitializeRequest(Request):
 
 
 class CloseRequest(Request):
-    '''
+    """
     Request for closing an SLSC session
-    '''
+    """
+
     def __init__(self, id: int, session_id: str):
         params = {"session_id": session_id}
         super().__init__(id, params)
 
     def _get_method(self) -> str:
         return "closeSession"
+
+
+class GetPropertyListRequest(Request):
+    """
+    Request for getDevicePropertyList
+    Lists all device properties
+    """
+
+    def __init__(self, id: int, session_id: str, device: str):
+        params = {"session_id": session_id, "device": device}
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "getDevicePropertyList"
 
 
 if __name__ == "__main__":
