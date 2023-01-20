@@ -120,3 +120,24 @@ class GetPropertyListResponse(GenericResponse):
     def _read_results(self, data: dict):
         self.static_properties = self._get_result(data, "static_properties")
         self.dynamic_properties = self._get_result(data, "dynamic_properties")
+
+
+class GetSessionPropertyListResponse(GenericResponse):
+    """
+    Response of getSessionPropertyList request
+    """
+
+    def __init__(self, data: dict):
+        self.properties = []
+        super().__init__(data)
+
+    @property
+    def properties(self) -> List[str]:
+        return self._static_properties
+
+    @properties.setter
+    def properties(self, properties: List[str]):
+        self._static_properties = properties
+
+    def _read_results(self, data: dict):
+        self.properties = self._get_result(data, "properties")

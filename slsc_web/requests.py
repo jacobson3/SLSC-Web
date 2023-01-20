@@ -25,14 +25,33 @@ class Request(ABC):
     def serialize(self) -> str:
         return json.dumps(self._request_dict)
 
+    def _initialize_parameters(
+        self,
+        devices: str = None,
+        physical_channels: str = None,
+        nvmem_areas: str = None,
+    ) -> dict:
+        if devices is not None:
+            return {"devices": devices.split(",")}
+        elif physical_channels is not None:
+            return {"physical_channels": physical_channels.split(",")}
+        else:  # TODO: need to think about case where they are all None
+            return {"nvmem_areas": nvmem_areas.split(",")}
+
 
 class InitializeRequest(Request):
     """
     Request for initializing an SLSC session
     """
 
-    def __init__(self, id: int, resources: str):
-        params = {"devices": resources.split(",")}
+    def __init__(
+        self,
+        id: int,
+        devices: str = None,
+        physical_channels: str = None,
+        nvmem_areas: str = None,
+    ):
+        params = self._initialize_parameters(devices, physical_channels, nvmem_areas)
         super().__init__(id, params)
 
     def _get_method(self) -> str:
@@ -52,18 +71,34 @@ class CloseRequest(Request):
         return "closeSession"
 
 
-class GetPropertyListRequest(Request):
+class GetDevicePropertyListRequest(Request):
     """
     Request for getDevicePropertyList
-    Lists all device properties
+    Lists all properties for single device, channel, or nvmem_area
     """
 
     def __init__(self, id: int, session_id: str, device: str):
+
         params = {"session_id": session_id, "device": device}
+
         super().__init__(id, params)
 
     def _get_method(self) -> str:
         return "getDevicePropertyList"
+
+
+class GetSessionPropertyListRequest(Request):
+    """
+    Request for getSessionPropertyList
+    Lists all session properties
+    """
+
+    def __init__(self, id: int, session_id: str):
+        params = {"session_id": session_id}
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "getSessionPropertyList"
 
 
 if __name__ == "__main__":

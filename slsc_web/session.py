@@ -1,18 +1,19 @@
+from abc import ABC, abstractmethod
 from slsc_web.requests import *
 from slsc_web.responses import *
 from slsc_web.protocols import JSON_RPC
 
 
-class Session:
+class SLSC_Session(ABC):
     """
-    Reference to SLSC devices, physical channels, or NVMEM areas.
-    Used to query and command SLSC Chassis
+    Parent class to all SLSC devices, physical channels, or NVMEM areas.
     """
 
     def __init__(self, chassis: str, resources: str):
         self._rpc = JSON_RPC(chassis)
         self._uid = 0
         self._session_id = ""
+        self._resources = resources
 
         response = self.initialize(resources)
         if response.has_error():
@@ -27,8 +28,15 @@ class Session:
         self.close()
         self._rpc.close()
 
+    @abstractmethod
+    def initialize(self, resources: str) -> InitializeResponse:
+        pass
+
     @staticmethod
     def _close_session(chassis: str, session_id: str) -> GenericResponse:
+        """
+        Static method used to close session by given session_id
+        """
         rpc = JSON_RPC(chassis)
 
         request = CloseRequest(1, session_id)
@@ -38,15 +46,6 @@ class Session:
 
     def _query(self, request: Request) -> dict:
         return self._rpc.query(request)
-
-    def initialize(self, resources: str) -> InitializeResponse:
-        """
-        Initialize SLSC connection, returning session ID
-        """
-        request = InitializeRequest(self._get_uid(), resources)
-        response = self._query(request)
-
-        return InitializeResponse(response)
 
     def close(self) -> GenericResponse:
         """
@@ -64,24 +63,68 @@ class Session:
         self._uid += 1
         return self._uid
 
-    def get_property_list(self, device: str) -> GetPropertyListResponse:
+    @abstractmethod
+    def get_property_list(self, resource: str = None) -> GetPropertyListResponse:
         """
-        Lists all devicee properties
+        Lists properties of given resource.
+        No input resource will return properties of first resource in session.
         """
-        request = GetPropertyListRequest(self._get_uid(), self._session_id, device)
+        pass
+
+    def get_session_properties(self) -> GetSessionPropertyListResponse:
+        """
+        Lists all session properties
+        """
+        request = GetSessionPropertyListRequest(self._get_uid(), self._session_id)
+        response = self._query(request)
+
+        return GetSessionPropertyListResponse(response)
+
+
+class Device(SLSC_Session):
+    """
+    Reference to SLSC devices.
+    Used to query and command SLSC chassis/modules
+    """
+
+    def __init__(self, chassis: str, devices: str):
+        super().__init__(chassis, devices)
+
+    def initialize(self, resources: str) -> InitializeResponse:
+        """
+        Initialize SLSC connection, returning session ID
+        """
+        request = InitializeRequest(self._get_uid(), devices=resources)
+        response = self._query(request)
+
+        return InitializeResponse(response)
+
+    def get_property_list(self, resource: str = None) -> GetPropertyListResponse:
+        """
+        Lists properties of given device.
+        No input resource will return properties of first resource in session.
+        """
+        if resource is None:  # set resource to first resource
+            resource = self._resources.split(",")[0]
+
+        request = GetDevicePropertyListRequest(self._get_uid(), self._session_id, resource)
         response = self._query(request)
 
         return GetPropertyListResponse(response)
 
 
 if __name__ == "__main__":
-    device = "SLSC-12001-TSE"
+    chassis_name = "SLSC-12001-TSE"
 
-    with Session("SLSC-12001-TSE", device) as sess:
-        properties = sess.get_property_list(device)
+    with Device(chassis_name, devices=chassis_name) as dev:
+        properties = dev.get_property_list()
 
-        print(f"Dynamic Properties:\n{properties.dynamic_properties}")
-        print(f"Dynamic Properties:\n{properties.static_properties}")
+        print(f"Dynamic Properties:\n{properties.dynamic_properties}\n")
+        print(f"Static Properties:\n{properties.static_properties}\n")
 
-    # close_response = Session._close_session(device, "_session15")
+        session_properties = dev.get_session_properties()
+
+        print(f"Session Properties:\n{session_properties.properties}\n")
+
+    # close_response = Device._close_session(device, "_session15")
     # print(close_response.error)

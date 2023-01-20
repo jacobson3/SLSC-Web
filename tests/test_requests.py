@@ -16,7 +16,14 @@ def test_close_request():
 
 
 def test_get_property_list():
-    message = requests.GetPropertyListRequest(8, "_session2", "TSE1")
+    message = requests.GetDevicePropertyListRequest(8, "_session2", "TSE1")
 
     result = r'{"id": "8", "jsonrpc": "2.0", "method": "getDevicePropertyList", "params": {"session_id": "_session2", "device": "TSE1"}}'
+    assert message.serialize() == result
+
+
+def test_get_session_property_list():
+    message = requests.GetSessionPropertyListRequest(11, "_session12")
+
+    result = r'{"id": "11", "jsonrpc": "2.0", "method": "getSessionPropertyList", "params": {"session_id": "_session12"}}'
     assert message.serialize() == result
