@@ -11,7 +11,7 @@ class GenericResponse:
         self.rpc_version = data.get("jsonrpc")
         self.error = data.get("error")
 
-        if not self.is_error():
+        if not self.has_error():
             self._read_results(data)
 
     @property
@@ -48,7 +48,7 @@ class GenericResponse:
     def error(self, error: dict):
         self._error = error
 
-    def is_error(self):
+    def has_error(self):
         if self.error is None:
             return False
         else:

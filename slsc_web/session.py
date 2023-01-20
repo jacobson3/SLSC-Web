@@ -15,7 +15,7 @@ class Session:
         self._session_id = ""
 
         response = self.initialize(resources)
-        if response.is_error():
+        if response.has_error():
             print(response.error)
         else:
             self._session_id = response.session_id
@@ -25,6 +25,16 @@ class Session:
 
     def __exit__(self, *args):
         self.close()
+        self._rpc.close()
+
+    @staticmethod
+    def _close_session(chassis: str, session_id: str) -> GenericResponse:
+        rpc = JSON_RPC(chassis)
+
+        request = CloseRequest(1, session_id)
+        response = rpc.query(request)
+
+        return GenericResponse(response)
 
     def _query(self, request: Request) -> dict:
         return self._rpc.query(request)
@@ -66,8 +76,12 @@ class Session:
 
 if __name__ == "__main__":
     device = "SLSC-12001-TSE"
+
     with Session("SLSC-12001-TSE", device) as sess:
         properties = sess.get_property_list(device)
 
         print(f"Dynamic Properties:\n{properties.dynamic_properties}")
         print(f"Dynamic Properties:\n{properties.static_properties}")
+
+    # close_response = Session._close_session(device, "_session15")
+    # print(close_response.error)
