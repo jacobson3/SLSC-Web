@@ -1,4 +1,22 @@
+from enum import Enum
 from typing import List
+
+
+class PropertyDataType(Enum):
+    Bool: 1
+    Double: 2
+    Int32: 3
+    Int64: 4
+    String: 5
+    Uint32: 6
+    Uint64: 7
+    BoolArray: 8
+    DoubleArray: 9
+    Int32Array: 10
+    Int64Array: 11
+    StringArray: 12
+    Uint32Array: 13
+    Uint64Array: 14
 
 
 class GenericResponse:
@@ -141,3 +159,34 @@ class GetSessionPropertyListResponse(GenericResponse):
 
     def _read_results(self, data: dict):
         self.properties = self._get_result(data, "properties")
+
+
+class GetPropertyResponse(GenericResponse):
+    """
+    Response of getProperty request
+    """
+
+    def __init__(self, data: dict):
+        self.data_type = ""
+        self.value = None
+        super().__init__(data)
+
+    @property
+    def data_type(self) -> str:
+        return self._data_type
+
+    @data_type.setter
+    def data_type(self, type: str):
+        self._data_type = type
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value
+
+    def _read_results(self, data: dict):
+        self.data_type = self._get_result(data, "data_type")
+        self.value = self._get_result(data, "value")

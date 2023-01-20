@@ -104,3 +104,26 @@ class GetSessionPropertyListRequest(Request):
 if __name__ == "__main__":
     init = InitializeRequest(4, "SLSC-12201")
     print(init.serialize())
+
+
+class GetPropertyRequest(Request):
+    """
+    Gets properties for device, physical channel, or nvmem area
+    """
+
+    def __init__(
+        self,
+        id: int,
+        session_id: str,
+        property: str,
+        devices: str = None,
+        physical_channels: str = None,
+        nvmem_areas: str = None,
+    ):
+        params = self._initialize_parameters(devices, physical_channels, nvmem_areas)
+        params["session_id"] = session_id
+        params["property"] = property
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "getProperty"

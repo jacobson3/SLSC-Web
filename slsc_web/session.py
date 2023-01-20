@@ -80,6 +80,14 @@ class SLSC_Session(ABC):
 
         return GetSessionPropertyListResponse(response)
 
+    @abstractmethod
+    def get_property(self, property: str, resources: str = None) -> GetPropertyResponse:
+        """
+        Returns value and type of given property
+        No input resource will return properties of resources used to open session
+        """
+        pass
+
 
 class Device(SLSC_Session):
     """
@@ -112,19 +120,24 @@ class Device(SLSC_Session):
 
         return GetPropertyListResponse(response)
 
+    def get_property(self, property: str, resources: str = None) -> GetPropertyResponse:
+        if resources is None:
+            resources = self._resources
+
+        request = GetPropertyRequest(self._get_uid(), self._session_id, property, devices=resources)
+        response = self._query(request)
+
+        return GetPropertyResponse(response)
+
 
 if __name__ == "__main__":
     chassis_name = "SLSC-12001-TSE"
 
     with Device(chassis_name, devices=chassis_name) as dev:
-        properties = dev.get_property_list()
+        modules = dev.get_property("Dev.Modules")
 
-        print(f"Dynamic Properties:\n{properties.dynamic_properties}\n")
-        print(f"Static Properties:\n{properties.static_properties}\n")
-
-        session_properties = dev.get_session_properties()
-
-        print(f"Session Properties:\n{session_properties.properties}\n")
+        print(modules.data_type)
+        print(modules.value)
 
     # close_response = Device._close_session(device, "_session15")
     # print(close_response.error)

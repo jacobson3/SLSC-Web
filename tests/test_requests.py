@@ -27,3 +27,10 @@ def test_get_session_property_list():
 
     result = r'{"id": "11", "jsonrpc": "2.0", "method": "getSessionPropertyList", "params": {"session_id": "_session12"}}'
     assert message.serialize() == result
+
+
+def test_get_property():
+    message = requests.GetPropertyRequest(3, "_session7", "Dev.Modules", "TSE2")
+
+    result = r'{"id": "3", "jsonrpc": "2.0", "method": "getProperty", "params": {"devices": ["TSE2"], "session_id": "_session7", "property": "Dev.Modules"}}'
+    assert message.serialize() == result
