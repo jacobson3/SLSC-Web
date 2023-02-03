@@ -83,6 +83,20 @@ class SLSC_Session(ABC):
 
         return GenericResponse(response)
 
+    def disconnect(self, devices: str = None) -> GenericResponse:
+        """
+        Disconnects from an SLSC device.
+
+        By default, disconnect from session device(s)
+        """
+        if devices is None:
+            devices = self._resources
+
+        request = DisconnectFromDevicesRequest(self._get_uid(), self._session_id, devices)
+        response = self._query(request)
+
+        return GenericResponse(response)
+
     def _get_uid(self) -> int:
         """
         Returns incrementing unique ID starting at 1
@@ -162,7 +176,9 @@ if __name__ == "__main__":
 
     with Device(chassis_name, devices=chassis_name) as dev:
         response = dev.connect("SLSC-12001-TSE-Mod2,SLSC-12001-TSE-Mod6")
+        print(response.error)
 
+        response = dev.disconnect()
         print(response.error)
 
     # close_response = Device._close_session(device, "_session15")

@@ -8,7 +8,6 @@ TODO:
 
 Left to implement:
 
-disconnectFromDevices
 renameDevice
 reserveDevices
 resetDevices

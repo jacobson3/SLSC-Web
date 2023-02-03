@@ -155,6 +155,19 @@ class ConnectToDevicesRequest(Request):
         return "connectToDevices"
 
 
+class DisconnectFromDevicesRequest(Request):
+    """
+    Disconnects from an SLSC Device
+    """
+
+    def __init__(self, id: int, session_id: str, devices: str):
+        params = {"session_id": session_id, "devices": devices.split(",")}
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "disconnectFromDevices"
+
+
 if __name__ == "__main__":
     init = InitializeRequest(4, "SLSC-12201")
     print(init.serialize())

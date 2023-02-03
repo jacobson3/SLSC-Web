@@ -48,3 +48,10 @@ def test_connect_to_device():
 
     result = r'{"id": "9", "jsonrpc": "2.0", "method": "connectToDevices", "params": {"session_id": "_session42", "devices": ["TSE21"]}}'
     assert message.serialize() == result
+
+
+def test_disconnect_from_device():
+    message = requests.DisconnectFromDevicesRequest(19, "_session2", "TSE21,TSE_Mod1")
+
+    result = r'{"id": "19", "jsonrpc": "2.0", "method": "disconnectFromDevices", "params": {"session_id": "_session2", "devices": ["TSE21", "TSE_Mod1"]}}'
+    assert message.serialize() == result
