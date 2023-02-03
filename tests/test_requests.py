@@ -62,3 +62,12 @@ def test_rename_device():
 
     result = r'{"id": "7", "jsonrpc": "2.0", "method": "renameDevice", "params": {"session_id": "_session0", "device": "Mod1", "new_device_name": "RTD_Sim"}}'
     assert message.serialize() == result
+
+
+def test_reserve_devices():
+    message = requests.ReserveDeviceRequest(
+        5, "_session4", "TSE21,TSE_Mod1", requests.AccessType.ReadOnly, "nitest", 1.5
+    )
+
+    result = r'{"id": "5", "jsonrpc": "2.0", "method": "reserveDevices", "params": {"session_id": "_session4", "devices": ["TSE21", "TSE_Mod1"], "access": "ReadOnly", "reservation_group": "nitest", "reservation_timeout": 1.5}}'
+    assert message.serialize() == result

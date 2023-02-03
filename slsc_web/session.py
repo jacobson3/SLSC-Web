@@ -180,16 +180,39 @@ class Device(SLSC_Session):
 
         return GenericResponse(response)
 
+    def reserve_devices(
+        self,
+        devices: str = None,
+        access: AccessType = AccessType.ReadWrite,
+        reservation_group: str = "",
+        reservation_timeout: float = 0.0,
+    ) -> GenericResponse:
+
+        if devices is None:
+            devices = self._resources
+
+        request = ReserveDeviceRequest(
+            self._get_uid, self._session_id, devices, access, reservation_group, reservation_timeout
+        )
+        response = self._query(request)
+
+        return GenericResponse(response)
+
 
 if __name__ == "__main__":
     chassis_name = "SLSC-12001-TSE"
 
     with Device(chassis_name, devices=chassis_name) as dev:
-        rename = dev.rename_device("12202-Mod1", "TSE-SLSC-12202-Mod1")
-        print(rename.error)
-
         modules = dev.get_property("Dev.Modules")
-        print(modules.value)
+        module = modules.value[1]
+        print(module)
+
+        res = dev.reserve_devices(module)
+        print(res.error)
+
+        props = dev.get_property_list(module)
+        print(props.dynamic_properties)
+        print(props.static_properties)
 
     # close_response = Device._close_session(device, "_session15")
     # print(close_response.error)

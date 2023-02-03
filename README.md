@@ -8,7 +8,6 @@ TODO:
 
 Left to implement:
 
-reserveDevices
 resetDevices
 unreserveDevices
 commitProperties

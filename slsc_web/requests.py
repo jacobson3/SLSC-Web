@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 import json
-from typing import List
+
+
+class AccessType(Enum):
+    ReadOnly = 1
+    ReadWrite = 3
 
 
 class Request(ABC):
@@ -179,6 +184,33 @@ class RenameDeviceRequest(Request):
 
     def _get_method(self) -> str:
         return "renameDevice"
+
+
+class ReserveDeviceRequest(Request):
+    """
+    Reserves one or multiple devices to prevent other sessions from accessing the devices
+    """
+
+    def __init__(
+        self,
+        id: int,
+        session_id: str,
+        devices: str = None,
+        access: AccessType = AccessType.ReadWrite,
+        reservation_group: str = "",
+        reservation_timeout: float = 0.0,
+    ):
+        params = {
+            "session_id": session_id,
+            "devices": devices.split(","),
+            "access": access.name,
+            "reservation_group": reservation_group,
+            "reservation_timeout": reservation_timeout,
+        }
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "reserveDevices"
 
 
 if __name__ == "__main__":
