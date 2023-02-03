@@ -8,7 +8,6 @@ TODO:
 
 Left to implement:
 
-renameDevice
 reserveDevices
 resetDevices
 unreserveDevices

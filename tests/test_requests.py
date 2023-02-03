@@ -55,3 +55,10 @@ def test_disconnect_from_device():
 
     result = r'{"id": "19", "jsonrpc": "2.0", "method": "disconnectFromDevices", "params": {"session_id": "_session2", "devices": ["TSE21", "TSE_Mod1"]}}'
     assert message.serialize() == result
+
+
+def test_rename_device():
+    message = requests.RenameDeviceRequest(7, "_session0", "Mod1", "RTD_Sim")
+
+    result = r'{"id": "7", "jsonrpc": "2.0", "method": "renameDevice", "params": {"session_id": "_session0", "device": "Mod1", "new_device_name": "RTD_Sim"}}'
+    assert message.serialize() == result

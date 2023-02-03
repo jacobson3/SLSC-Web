@@ -170,16 +170,26 @@ class Device(SLSC_Session):
 
         return GetPropertyResponse(response)
 
+    def rename_device(self, device: str, new_name: str) -> GenericResponse:
+        """
+        Renames device to new_name
+        """
+
+        request = RenameDeviceRequest(self._get_uid(), self._session_id, device, new_name)
+        response = self._query(request)
+
+        return GenericResponse(response)
+
 
 if __name__ == "__main__":
     chassis_name = "SLSC-12001-TSE"
 
     with Device(chassis_name, devices=chassis_name) as dev:
-        response = dev.connect("SLSC-12001-TSE-Mod2,SLSC-12001-TSE-Mod6")
-        print(response.error)
+        rename = dev.rename_device("12202-Mod1", "TSE-SLSC-12202-Mod1")
+        print(rename.error)
 
-        response = dev.disconnect()
-        print(response.error)
+        modules = dev.get_property("Dev.Modules")
+        print(modules.value)
 
     # close_response = Device._close_session(device, "_session15")
     # print(close_response.error)

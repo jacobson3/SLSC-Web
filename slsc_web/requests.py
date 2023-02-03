@@ -168,6 +168,19 @@ class DisconnectFromDevicesRequest(Request):
         return "disconnectFromDevices"
 
 
+class RenameDeviceRequest(Request):
+    """
+    Renames a device
+    """
+
+    def __init__(self, id: int, session_id: str, device: str, new_name: str):
+        params = {"session_id": session_id, "device": device, "new_device_name": new_name}
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "renameDevice"
+
+
 if __name__ == "__main__":
     init = InitializeRequest(4, "SLSC-12201")
     print(init.serialize())
