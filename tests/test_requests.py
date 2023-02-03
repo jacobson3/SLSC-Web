@@ -34,3 +34,10 @@ def test_get_property():
 
     result = r'{"id": "3", "jsonrpc": "2.0", "method": "getProperty", "params": {"devices": ["TSE2"], "session_id": "_session7", "property": "Dev.Modules"}}'
     assert message.serialize() == result
+
+
+def test_abort_session():
+    message = requests.AbortRequest(4, "_session11")
+
+    result = r'{"id": "4", "jsonrpc": "2.0", "method": "abortSession", "params": {"session_id": "_session11"}}'
+    assert message.serialize() == result

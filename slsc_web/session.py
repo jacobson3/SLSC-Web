@@ -56,6 +56,19 @@ class SLSC_Session(ABC):
 
         return GenericResponse(response)
 
+    def abort(self) -> GenericResponse:
+        """
+        Cancels a method that blocks network communications
+
+        After aborting the session, the session handle remains valid, but the methods that access
+        network connections return errors. To recover from an aborted session, close the session
+        and initialize a new one.
+        """
+        request = AbortRequest(self._get_uid(), self._session_id)
+        response = self._query(request)
+
+        return GenericResponse(response)
+
     def _get_uid(self) -> int:
         """
         Returns incrementing unique ID starting at 1
@@ -134,10 +147,9 @@ if __name__ == "__main__":
     chassis_name = "SLSC-12001-TSE"
 
     with Device(chassis_name, devices=chassis_name) as dev:
-        modules = dev.get_property("Dev.Modules")
+        response = dev.abort()
 
-        print(modules.data_type)
-        print(modules.value)
+        print(response.error)
 
     # close_response = Device._close_session(device, "_session15")
     # print(close_response.error)

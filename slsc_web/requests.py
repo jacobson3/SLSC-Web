@@ -101,11 +101,6 @@ class GetSessionPropertyListRequest(Request):
         return "getSessionPropertyList"
 
 
-if __name__ == "__main__":
-    init = InitializeRequest(4, "SLSC-12201")
-    print(init.serialize())
-
-
 class GetPropertyRequest(Request):
     """
     Gets properties for device, physical channel, or nvmem area
@@ -127,3 +122,25 @@ class GetPropertyRequest(Request):
 
     def _get_method(self) -> str:
         return "getProperty"
+
+
+class AbortRequest(Request):
+    """
+    Cancels a method that blocks network communications
+
+    After aborting the session, the session handle remains valid, but the methods that access
+    network connections return errors. To recover from an aborted session, close the session
+    and initialize a new one.
+    """
+
+    def __init__(self, id: int, session_id: str):
+        params = {"session_id": session_id}
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "abortSession"
+
+
+if __name__ == "__main__":
+    init = InitializeRequest(4, "SLSC-12201")
+    print(init.serialize())
