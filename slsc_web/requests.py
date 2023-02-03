@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import json
+from typing import List
 
 
 class Request(ABC):
@@ -139,6 +140,19 @@ class AbortRequest(Request):
 
     def _get_method(self) -> str:
         return "abortSession"
+
+
+class ConnectToDevicesRequest(Request):
+    """
+    Connects to an SLSC Device
+    """
+
+    def __init__(self, id: int, session_id: str, devices: str):
+        params = {"session_id": session_id, "devices": devices.split(",")}
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "connectToDevices"
 
 
 if __name__ == "__main__":
