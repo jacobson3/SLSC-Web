@@ -85,3 +85,10 @@ def test_unreserve_devices():
 
     result = r'{"id": "7", "jsonrpc": "2.0", "method": "unreserveDevices", "params": {"session_id": "_session99", "devices": ["TSE_Mod11", "TSE_Mod22"]}}'
     assert message.serialize() == result
+
+
+def test_commit_properties():
+    message = requests.CommitPropertiesRequest(31, "_session9", "SLSC-12201")
+
+    result = r'{"id": "31", "jsonrpc": "2.0", "method": "commitProperties", "params": {"devices": ["SLSC-12201"], "session_id": "_session9"}}'
+    assert message.serialize() == result

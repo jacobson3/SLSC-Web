@@ -8,7 +8,6 @@ TODO:
 
 Left to implement:
 
-commitProperties
 getPropertyInformation
 setProperty
 executeCommand

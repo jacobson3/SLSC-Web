@@ -110,14 +110,6 @@ class SLSC_Session(ABC):
         self._uid += 1
         return self._uid
 
-    @abstractmethod
-    def get_property_list(self, resource: str = None) -> GetPropertyListResponse:
-        """
-        Lists properties of given resource.
-        No input resource will return properties of first resource in session.
-        """
-        pass
-
     def get_session_properties(self) -> GetSessionPropertyListResponse:
         """
         Lists all session properties
@@ -127,14 +119,6 @@ class SLSC_Session(ABC):
         response = self._query(request)
 
         return GetSessionPropertyListResponse(response)
-
-    @abstractmethod
-    def get_property(self, property: str, resources: str = None) -> GetPropertyResponse:
-        """
-        Returns value and type of given property
-        No input resource will return properties of resources used to open session
-        """
-        pass
 
 
 class Device(SLSC_Session):
@@ -245,6 +229,27 @@ class Device(SLSC_Session):
 
         return GenericResponse(response)
 
+    def commit_properties(self, devices: str = None) -> GenericResponse:
+        """
+        Commits properties with pending changes to SLSC hardware.
+
+        You must commit dynamic properties for the changes to take effect.
+
+        You do not have to commit static properties because changes take effect immediately after
+        you set static properties.
+
+        If you set a property multiple times before you commit the
+        property, this method commits only the last value.
+        """
+
+        if devices is None:
+            devices = self._resources
+
+        request = CommitPropertiesRequest(self._get_uid(), self._session_id, devices)
+        response = self._query(request)
+
+        return GenericResponse(response)
+
 
 if __name__ == "__main__":
     chassis_name = "SLSC-12001-TSE"
@@ -256,9 +261,3 @@ if __name__ == "__main__":
 
         res = dev.reserve_devices(module)
         print(res.error)
-
-        res = dev.unreserve_devices(module)
-        print(res.error)
-
-    # close_response = Device._close_session(device, "_session15")
-    # print(close_response.error)

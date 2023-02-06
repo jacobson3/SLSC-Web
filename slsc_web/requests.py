@@ -239,6 +239,26 @@ class UnreserveDevicesRequest(Request):
         return "unreserveDevices"
 
 
+class CommitPropertiesRequest(Request):
+    """
+    Commits properties with pending changes to SLSC hardware.
+    """
+
+    def __init__(
+        self,
+        id: int,
+        session_id: str,
+        devices: str = None,
+        physical_channels: str = None,
+    ):
+        params = self._initialize_parameters(devices, physical_channels)
+        params["session_id"] = session_id
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "commitProperties"
+
+
 if __name__ == "__main__":
     init = InitializeRequest(4, "SLSC-12201")
     print(init.serialize())
