@@ -8,7 +8,6 @@ TODO:
 
 Left to implement:
 
-unreserveDevices
 commitProperties
 getPropertyInformation
 setProperty

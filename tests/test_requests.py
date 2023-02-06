@@ -78,3 +78,10 @@ def test_reset_devices():
 
     result = r'{"id": "87", "jsonrpc": "2.0", "method": "resetDevices", "params": {"session_id": "_session99", "devices": ["TSE_Mod1", "TSE_Mod2"]}}'
     assert message.serialize() == result
+
+
+def test_unreserve_devices():
+    message = requests.UnreserveDevicesRequest(7, "_session99", "TSE_Mod11,TSE_Mod22")
+
+    result = r'{"id": "7", "jsonrpc": "2.0", "method": "unreserveDevices", "params": {"session_id": "_session99", "devices": ["TSE_Mod11", "TSE_Mod22"]}}'
+    assert message.serialize() == result

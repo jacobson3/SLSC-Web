@@ -37,6 +37,7 @@ class SLSC_Session(ABC):
         """
         Static method used to close session by given session_id
         """
+
         rpc = JSON_RPC(chassis)
 
         request = CloseRequest(1, session_id)
@@ -51,6 +52,7 @@ class SLSC_Session(ABC):
         """
         Closes any open SLSC references
         """
+
         request = CloseRequest(self._get_uid(), self._session_id)
         response = self._query(request)
 
@@ -64,6 +66,7 @@ class SLSC_Session(ABC):
         network connections return errors. To recover from an aborted session, close the session
         and initialize a new one.
         """
+
         request = AbortRequest(self._get_uid(), self._session_id)
         response = self._query(request)
 
@@ -75,6 +78,7 @@ class SLSC_Session(ABC):
 
         By default, connect to session device(s)
         """
+
         if devices is None:
             devices = self._resources
 
@@ -89,6 +93,7 @@ class SLSC_Session(ABC):
 
         By default, disconnect from session device(s)
         """
+
         if devices is None:
             devices = self._resources
 
@@ -101,6 +106,7 @@ class SLSC_Session(ABC):
         """
         Returns incrementing unique ID starting at 1
         """
+
         self._uid += 1
         return self._uid
 
@@ -116,6 +122,7 @@ class SLSC_Session(ABC):
         """
         Lists all session properties
         """
+
         request = GetSessionPropertyListRequest(self._get_uid(), self._session_id)
         response = self._query(request)
 
@@ -143,6 +150,7 @@ class Device(SLSC_Session):
         """
         Initialize SLSC connection, returning session ID
         """
+
         request = InitializeRequest(self._get_uid(), devices=resources)
         response = self._query(request)
 
@@ -153,6 +161,7 @@ class Device(SLSC_Session):
         Lists properties of given device.
         No input resource will return properties of first resource in session.
         """
+
         if resource is None:  # set resource to first resource
             resource = self._resources.split(",")[0]
 
@@ -187,6 +196,10 @@ class Device(SLSC_Session):
         reservation_group: str = "",
         reservation_timeout: float = 0.0,
     ) -> GenericResponse:
+        """
+        Reserves one or multiple devices to prevent other sessions from accessing the devices.
+        You must reserve a device before using it.
+        """
 
         if devices is None:
             devices = self._resources
@@ -199,10 +212,35 @@ class Device(SLSC_Session):
         return GenericResponse(response)
 
     def reset_devices(self, devices: str = None) -> GenericResponse:
+        """
+        Resets devices to default state.
+
+        This method sends the specified modules a software reset signal, reinitializes module
+        registers to their initial value, and rereads the module's non-volatile memory.
+        If you specify a chassis, this method resets all modules in the chassis.
+
+        By default the function will reset the session devices
+        """
+
         if devices is None:
             devices = self._resources
 
         request = ResetDevicesRequest(self._get_uid(), self._session_id, devices)
+        response = self._query(request)
+
+        return GenericResponse(response)
+
+    def unreserve_devices(self, devices: str = None) -> GenericResponse:
+        """
+        Unreserves one or multiple devices so that other sessions can reserve them.
+
+        By default, function will unreserve session devices
+        """
+
+        if devices is None:
+            devices = self._resources
+
+        request = UnreserveDevicesRequest(self._get_uid(), self._session_id, devices)
         response = self._query(request)
 
         return GenericResponse(response)
@@ -217,6 +255,9 @@ if __name__ == "__main__":
         print(module)
 
         res = dev.reserve_devices(module)
+        print(res.error)
+
+        res = dev.unreserve_devices(module)
         print(res.error)
 
     # close_response = Device._close_session(device, "_session15")
