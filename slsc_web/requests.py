@@ -173,6 +173,19 @@ class DisconnectFromDevicesRequest(Request):
         return "disconnectFromDevices"
 
 
+class ResetDevicesRequest(Request):
+    """
+    Resets devices to default state
+    """
+
+    def __init__(self, id: int, session_id: str, devices: str):
+        params = {"session_id": session_id, "devices": devices.split(",")}
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "resetDevices"
+
+
 class RenameDeviceRequest(Request):
     """
     Renames a device

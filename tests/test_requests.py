@@ -71,3 +71,10 @@ def test_reserve_devices():
 
     result = r'{"id": "5", "jsonrpc": "2.0", "method": "reserveDevices", "params": {"session_id": "_session4", "devices": ["TSE21", "TSE_Mod1"], "access": "ReadOnly", "reservation_group": "nitest", "reservation_timeout": 1.5}}'
     assert message.serialize() == result
+
+
+def test_reset_devices():
+    message = requests.ResetDevicesRequest(87, "_session99", "TSE_Mod1,TSE_Mod2")
+
+    result = r'{"id": "87", "jsonrpc": "2.0", "method": "resetDevices", "params": {"session_id": "_session99", "devices": ["TSE_Mod1", "TSE_Mod2"]}}'
+    assert message.serialize() == result

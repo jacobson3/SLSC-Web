@@ -198,6 +198,15 @@ class Device(SLSC_Session):
 
         return GenericResponse(response)
 
+    def reset_devices(self, devices: str = None) -> GenericResponse:
+        if devices is None:
+            devices = self._resources
+
+        request = ResetDevicesRequest(self._get_uid(), self._session_id, devices)
+        response = self._query(request)
+
+        return GenericResponse(response)
+
 
 if __name__ == "__main__":
     chassis_name = "SLSC-12001-TSE"
@@ -209,10 +218,6 @@ if __name__ == "__main__":
 
         res = dev.reserve_devices(module)
         print(res.error)
-
-        props = dev.get_property_list(module)
-        print(props.dynamic_properties)
-        print(props.static_properties)
 
     # close_response = Device._close_session(device, "_session15")
     # print(close_response.error)
