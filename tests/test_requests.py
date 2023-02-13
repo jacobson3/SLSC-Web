@@ -92,3 +92,10 @@ def test_commit_properties():
 
     result = r'{"id": "31", "jsonrpc": "2.0", "method": "commitProperties", "params": {"devices": ["SLSC-12201"], "session_id": "_session9"}}'
     assert message.serialize() == result
+
+
+def test_get_property_information():
+    message = requests.GetPropertyInformationRequest(3, "_session7", "Dev.Modules", "TSE2")
+
+    result = r'{"id": "3", "jsonrpc": "2.0", "method": "getPropertyInformation", "params": {"devices": ["TSE2"], "session_id": "_session7", "property": "Dev.Modules"}}'
+    assert message.serialize() == result

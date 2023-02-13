@@ -258,6 +258,27 @@ class CommitPropertiesRequest(Request):
     def _get_method(self) -> str:
         return "commitProperties"
 
+class GetPropertyInformationRequest(Request):
+    """
+    Gets all information of a property
+    """
+
+    def __init__(
+        self,
+        id: int,
+        session_id: str,
+        property: str,
+        devices: str = None,
+        physical_channels: str = None,
+        nvmem_areas: str = None,
+    ):
+        params = self._initialize_parameters(devices, physical_channels, nvmem_areas)
+        params["session_id"] = session_id
+        params["property"] = property
+        super().__init__(id, params)
+
+    def _get_method(self) -> str:
+        return "getPropertyInformation"
 
 if __name__ == "__main__":
     init = InitializeRequest(4, "SLSC-12201")

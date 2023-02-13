@@ -163,6 +163,24 @@ class Device(SLSC_Session):
 
         return GetPropertyResponse(response)
 
+    def get_property_information(
+        self, property: str, resources: str = None
+    ) -> GetPropertyInformationResponse:
+        """
+        Gets all information of a property
+
+        Leaving resources empty will use the resources opened with this session
+        """
+        if resources is None:
+            resources = self._resources
+
+        request = GetPropertyInformationRequest(
+            self._get_uid(), self._session_id, property, devices=resources
+        )
+        response = self._query(request)
+
+        return GetPropertyInformationResponse(response)
+
     def rename_device(self, device: str, new_name: str) -> GenericResponse:
         """
         Renames device to new_name
@@ -255,9 +273,6 @@ if __name__ == "__main__":
     chassis_name = "SLSC-12001-TSE"
 
     with Device(chassis_name, devices=chassis_name) as dev:
-        modules = dev.get_property("Dev.Modules")
-        module = modules.value[1]
-        print(module)
-
-        res = dev.reserve_devices(module)
-        print(res.error)
+        props = dev.get_property_list()
+        print(props.dynamic_properties)
+        print(props.static_properties)
